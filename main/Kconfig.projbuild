@@ -1,0 +1,32 @@
+menu "Project configuration"
+
+    menu "LED setup"
+        choice BLINK_LED
+            prompt "Blink LED type"
+            default BLINK_LED_GPIO
+            help
+                Defines the default peripheral for blink example
+
+            config BLINK_LED_GPIO
+                bool "GPIO"
+            config BLINK_LED_RMT
+                bool "RMT - Addressable LED"
+        endchoice
+
+        config BLINK_GPIO
+            int "Blink GPIO number"
+            range 0 48
+            default 48
+            help
+                GPIO number (IOxx) to blink on and off or the RMT signal for the addressable LED.
+                Some GPIOs are used for other purposes (flash connections, etc.) and cannot be used to blink.
+
+        config BLINK_INVERTED
+        	depends on BLINK_LED_GPIO
+        	bool "Inverted"
+            help
+                lED anode to VCC
+
+    endmenu
+
+endmenu
