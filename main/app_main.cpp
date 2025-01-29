@@ -23,7 +23,7 @@ extern "C" void app_main(void)
     
     
     //esp_log_level_set("*", ESP_LOG_INFO);       // set all components to INFO level
-    esp_log_level_set("esp_http_client", ESP_LOG_DEBUG);    // enable DEBUG logs for component foo
+    //esp_log_level_set("esp_http_client", ESP_LOG_DEBUG);    // enable DEBUG logs for component foo
     
     
 #if defined(CONFIG_ESP_CONSOLE_UART_DEFAULT) || defined(CONFIG_ESP_CONSOLE_UART_CUSTOM)

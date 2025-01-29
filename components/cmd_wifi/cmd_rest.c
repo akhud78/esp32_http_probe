@@ -15,19 +15,42 @@
 static const char *TAG = "cmd_rest";
 
 static struct {
-    struct arg_str *url_base;
+    struct arg_str *url;
+    struct arg_int *laps;
     struct arg_end *end;
 } rest_args;
 
 /** 'rest' command  */
 // https://github.com/parabuzzle/idf_http_rest_client
 /*
-    esp32> nvs_set url_base str -v  http://httpbin.org/stream/6
-    esp32> nvs_set url_base str -v  http://esp32-fs.local/image.jpeg
+    esp32> nvs_set url str -v  http://httpbin.org/stream/6
+    esp32> nvs_set url str -v  http://esp32-fs.local/image.jpeg
     esp32> nvs_list nvs
     esp32> rest http://httpbin.org/get
-    nvs_get url_base str
+    nvs_get url str
 */
+
+static int _read(char *url, bool show)
+{
+    http_rest_recv_buffer_t response_buffer = {0};
+
+    uint64_t start = esp_timer_get_time();
+    if (http_rest_client_get(url, &response_buffer) != ESP_OK)
+        return -1;
+    uint64_t end = esp_timer_get_time();
+
+    int run_time_ms = (end - start) / 1000;
+    int bytes = response_buffer.buffer_len;
+    int bps = bytes * 1000 * 8 / run_time_ms;
+    ESP_LOGI(TAG, "status=%d bytes=%d run_time_ms=%d bps=%d", 
+        response_buffer.status_code, bytes, run_time_ms, bps);
+
+    if (show) {
+        printf("--- buffer ---\n%s\n", response_buffer.buffer);
+    }
+    http_rest_client_cleanup(&response_buffer);
+    return 0;
+}
 
 static int rest(int argc, char **argv)
 {    
@@ -37,44 +60,35 @@ static int rest(int argc, char **argv)
         return 1;
     }
 
-    char url_base[REST_URL_MAX_LEN] = "";
-    strlcpy(url_base, rest_args.url_base->sval[0],  sizeof(url_base));
+    char url[REST_URL_MAX_LEN] = "";
+    strlcpy(url, rest_args.url->sval[0],  sizeof(url));
     
-    if (!strlen(url_base)) {
+    if (!strlen(url)) {
 
-        if (get_str_from_nvs("url_base", url_base, sizeof(url_base)) != ESP_OK) {
-            ESP_LOGE(TAG, "No such entry was found");
+        if (get_str_from_nvs("url", url, sizeof(url)) != ESP_OK) {
+            ESP_LOGE(TAG, "No 'url' entry was found");
             return -1;
         }
     }
     
-    ESP_LOGI(__func__, "url_base='%s'", url_base);
-
-    http_rest_recv_buffer_t response_buffer = {0};
-
-    uint64_t start = esp_timer_get_time();
-    esp_err_t  err = http_rest_client_get(url_base, &response_buffer);
-    uint64_t end = esp_timer_get_time();
-
-    ESP_ERROR_CHECK(err);
-    int run_time_ms = (end - start) / 1000;
-    int bytes = response_buffer.buffer_len;
-    int bps = bytes * 1000 * 8 / run_time_ms;
-    ESP_LOGI(TAG, "bytes=%d run_time_ms=%d bps=%d", bytes, run_time_ms, bps);
-
-    printf("status_code=%d\n", response_buffer.status_code);
-    if (bytes < 1024*2) {  //check limit
-        printf("--- buffer ---\n%s\n", response_buffer.buffer);
+    int laps = 1;
+    if (rest_args.laps->count > 0) {
+        laps = (uint32_t)(rest_args.laps->ival[0]);
     }
-    // clean up
-    http_rest_client_cleanup(&response_buffer);
+    
+    for (int i=0; i<laps; i++) {
+        if (_read(url, false)) {
+            return -1;
+        }
+    }
     
     return 0;
 }
 
 void register_rest(void)
 {
-    rest_args.url_base = arg_str0(NULL, NULL, "<url_base>", "URL base");
+    rest_args.url = arg_str0(NULL, NULL, "<url>", "server URL");
+    rest_args.laps = arg_int0("l", "laps", "<n>", "number of laps");
     rest_args.end = arg_end(1);
     
     const esp_console_cmd_t rest_cmd = {
