@@ -1,4 +1,4 @@
-# SimpleHTTPServer
+# Python SimpleHTTPServer
 
 - [Tests](tests.md)
 
@@ -83,3 +83,4 @@ I (391498) cmd_client: status=200 bytes=35588 run_time_ms=95 bps=2996884
 I (391588) cmd_client: status=200 bytes=35588 run_time_ms=89 bps=3198921
 I (391698) cmd_client: status=200 bytes=35588 run_time_ms=104 bps=2737538
 ```
+

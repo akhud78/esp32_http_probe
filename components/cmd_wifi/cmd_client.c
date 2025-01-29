@@ -62,6 +62,7 @@ static int _read(char *url, bool show)
         return -1;
     }
     int read_len = 0;
+    bool chunked = false;
         
     int content_length = esp_http_client_fetch_headers(client);
     if (content_length < 0) {
@@ -69,7 +70,7 @@ static int _read(char *url, bool show)
         free(buffer);
         return -1;
     } else if (content_length == 0 && esp_http_client_is_chunked_response(client)) { 
-        ESP_LOGI(TAG, "Chunked encoding stream");
+        chunked = true;
         
         read_len = esp_http_client_read_response(client, buffer, CLIENT_BUFFER_SIZE);
         /*
@@ -98,8 +99,8 @@ static int _read(char *url, bool show)
         
         int run_time_ms = (end - start) / 1000;
         int bps = read_len * 1000 * 8 / run_time_ms;
-        ESP_LOGI(TAG, "status=%d bytes=%d run_time_ms=%d bps=%d", 
-            status_code, read_len, run_time_ms, bps);
+        ESP_LOGI(TAG, "status=%d bytes=%d run_time_ms=%d bps=%d %s", 
+            status_code, read_len, run_time_ms, bps, chunked ? "chunked" : "");
     }
     
     esp_http_client_close(client);
