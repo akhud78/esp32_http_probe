@@ -55,17 +55,31 @@ $ for i in {1..10}; do $cmd; done
 ```
 
 ### esp32s3
+- HTTP REST Client
 ```
 esp32> rest http://spb.local:9000/image.jpeg -l10
-I (113538) cmd_rest: status=200 bytes=35588 run_time_ms=141 bps=2019177
-I (113668) cmd_rest: status=200 bytes=35588 run_time_ms=126 bps=2259555
-I (113758) cmd_rest: status=200 bytes=35588 run_time_ms=92 bps=3094608
-I (113868) cmd_rest: status=200 bytes=35588 run_time_ms=108 bps=2636148
-I (113988) cmd_rest: status=200 bytes=35588 run_time_ms=114 bps=2497403
-I (114108) cmd_rest: status=200 bytes=35588 run_time_ms=122 bps=2333639
-I (114208) cmd_rest: status=200 bytes=35588 run_time_ms=96 bps=2965666
-I (114338) cmd_rest: status=200 bytes=35588 run_time_ms=128 bps=2224250
-I (114438) cmd_rest: status=200 bytes=35588 run_time_ms=99 bps=2875797
-I (114538) cmd_rest: status=200 bytes=35588 run_time_ms=96 bps=2965666
+I (71123) cmd_rest: status=200 bytes=35588 run_time_ms=2558 bps=111299 <-- max
+I (71223) cmd_rest: status=200 bytes=35588 run_time_ms=93 bps=3061333
+I (71313) cmd_rest: status=200 bytes=35588 run_time_ms=93 bps=3061333
+I (71413) cmd_rest: status=200 bytes=35588 run_time_ms=96 bps=2965666
+I (71503) cmd_rest: status=200 bytes=35588 run_time_ms=93 bps=3061333
+I (71603) cmd_rest: status=200 bytes=35588 run_time_ms=92 bps=3094608  <-- min
+I (71703) cmd_rest: status=200 bytes=35588 run_time_ms=99 bps=2875797
+I (71893) cmd_rest: status=200 bytes=35588 run_time_ms=185 bps=1538940
+I (72063) cmd_rest: status=200 bytes=35588 run_time_ms=170 bps=1674729
+I (72273) cmd_rest: status=200 bytes=35588 run_time_ms=206 bps=1382058
 ```
-- esp32c3
+- ESP HTTP Client
+```
+esp32> client http://spb.local:9000/image.jpeg -l10
+I (389728) cmd_client: status=200 bytes=35588 run_time_ms=143 bps=1990937
+I (390928) cmd_client: status=200 bytes=35588 run_time_ms=1194 bps=238445 <-- max
+I (391028) cmd_client: status=200 bytes=35588 run_time_ms=95 bps=2996884
+I (391118) cmd_client: status=200 bytes=35588 run_time_ms=89 bps=3198921 <-- min
+I (391218) cmd_client: status=200 bytes=35588 run_time_ms=92 bps=3094608
+I (391308) cmd_client: status=200 bytes=35588 run_time_ms=92 bps=3094608
+I (391398) cmd_client: status=200 bytes=35588 run_time_ms=90 bps=3163377
+I (391498) cmd_client: status=200 bytes=35588 run_time_ms=95 bps=2996884
+I (391588) cmd_client: status=200 bytes=35588 run_time_ms=89 bps=3198921
+I (391698) cmd_client: status=200 bytes=35588 run_time_ms=104 bps=2737538
+```

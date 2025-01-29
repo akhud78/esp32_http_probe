@@ -32,9 +32,8 @@ static struct {
 
 static int _read(char *url, bool show)
 {
-    http_rest_recv_buffer_t response_buffer = {0};
-
     uint64_t start = esp_timer_get_time();
+    http_rest_recv_buffer_t response_buffer = {0};
     if (http_rest_client_get(url, &response_buffer) != ESP_OK)
         return -1;
     uint64_t end = esp_timer_get_time();
