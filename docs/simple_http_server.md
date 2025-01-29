@@ -83,4 +83,33 @@ I (391498) cmd_client: status=200 bytes=35588 run_time_ms=95 bps=2996884
 I (391588) cmd_client: status=200 bytes=35588 run_time_ms=89 bps=3198921
 I (391698) cmd_client: status=200 bytes=35588 run_time_ms=104 bps=2737538
 ```
-
+### esp32c3
+- HTTP REST Client
+```
+esp32> rest http://spb.local:9000/image.jpeg -l10
+esp32> rest http://spb.local:9000/image.jpeg -l10
+I (521973) cmd_rest: status=200 bytes=35588 run_time_ms=115 bps=2475686
+I (522093) cmd_rest: status=200 bytes=35588 run_time_ms=116 bps=2454344
+I (522203) cmd_rest: status=200 bytes=35588 run_time_ms=106 bps=2685886
+I (522303) cmd_rest: status=200 bytes=35588 run_time_ms=104 bps=2737538
+I (522423) cmd_rest: status=200 bytes=35588 run_time_ms=115 bps=2475686
+I (522533) cmd_rest: status=200 bytes=35588 run_time_ms=111 bps=2564900
+I (522653) cmd_rest: status=200 bytes=35588 run_time_ms=117 bps=2433367 <-- max
+I (522763) cmd_rest: status=200 bytes=35588 run_time_ms=107 bps=2660785 
+I (522863) cmd_rest: status=200 bytes=35588 run_time_ms=101 bps=2818851 <-- min
+I (522983) cmd_rest: status=200 bytes=35588 run_time_ms=119 bps=2392470
+```
+- ESP HTTP Client
+```
+esp32> client http://spb.local:9000/image.jpeg -l10
+I (626163) cmd_client: status=200 bytes=35588 run_time_ms=138 bps=2063072 <-- max
+I (626273) cmd_client: status=200 bytes=35588 run_time_ms=111 bps=2564900
+I (626383) cmd_client: status=200 bytes=35588 run_time_ms=105 bps=2711466
+I (626493) cmd_client: status=200 bytes=35588 run_time_ms=104 bps=2737538
+I (626593) cmd_client: status=200 bytes=35588 run_time_ms=102 bps=2791215
+I (626703) cmd_client: status=200 bytes=35588 run_time_ms=110 bps=2588218
+I (626813) cmd_client: status=200 bytes=35588 run_time_ms=101 bps=2818851 <-- min
+I (626923) cmd_client: status=200 bytes=35588 run_time_ms=104 bps=2737538
+I (627033) cmd_client: status=200 bytes=35588 run_time_ms=113 bps=2519504
+I (627153) cmd_client: status=200 bytes=35588 run_time_ms=119 bps=2392470
+```

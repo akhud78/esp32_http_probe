@@ -4,7 +4,7 @@ Testing HTTP clients
 ## Requirements
 - Ubuntu 22.04 LTS
 - [ESP-IDF v5.4](https://docs.espressif.com/projects/esp-idf/en/v5.4/esp32s3/index.html)
-- [ESP32-S3-DevKitC-1](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/hw-reference/esp32s3/user-guide-devkitc-1.html) - esp32s3 board (gpio48 rgd)
+- [ESP32-S3-DevKitC-1](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/hw-reference/esp32s3/user-guide-devkitc-1.html) - esp32s3 module (gpio48 rgd)
 - [ESP32-C3-Super-Mini](https://github.com/sidharthmohannair/Tutorial-ESP32-C3-Super-Mini) - esp32c3 board (gpio8 inverted)
 
 ## Links

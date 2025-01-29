@@ -44,7 +44,7 @@ $ for i in {1..10}; do $cmd; done
 esp32> join
 esp32> rest http://esp32-fs.local/image.jpeg -l10
 I (51533) cmd_rest: status=200 bytes=35588 run_time_ms=2260 bps=125975
-I (53903) cmd_rest: status=200 bytes=35588 run_time_ms=2361 bps=120586
+I (53903) cmd_rest: status=200 bytes=35588 run_time_ms=2361 bps=120586 <-- max
 I (54113) cmd_rest: status=200 bytes=35588 run_time_ms=212 bps=1342943
 I (54233) cmd_rest: status=200 bytes=35588 run_time_ms=122 bps=2333639
 I (54363) cmd_rest: status=200 bytes=35588 run_time_ms=126 bps=2259555
@@ -52,7 +52,7 @@ I (54513) cmd_rest: status=200 bytes=35588 run_time_ms=152 bps=1873052
 I (54633) cmd_rest: status=200 bytes=35588 run_time_ms=113 bps=2519504
 I (54763) cmd_rest: status=200 bytes=35588 run_time_ms=134 bps=2124656
 I (54913) cmd_rest: status=200 bytes=35588 run_time_ms=146 bps=1950027
-I (55043) cmd_rest: status=200 bytes=35588 run_time_ms=124 bps=2296000
+I (55043) cmd_rest: status=200 bytes=35588 run_time_ms=124 bps=2296000 <-- min
 ```
 - ESP HTTP Client
 ```
@@ -67,4 +67,34 @@ I (77923) cmd_client: status=200 bytes=35588 run_time_ms=141 bps=2019177 chunked
 I (78073) cmd_client: status=200 bytes=35588 run_time_ms=151 bps=1885456 chunked
 I (78223) cmd_client: status=200 bytes=35588 run_time_ms=149 bps=1910765 chunked
 I (78373) cmd_client: status=200 bytes=35588 run_time_ms=148 bps=1923675 chunked
+```
+### esp32c3
+- HTTP REST Client
+```
+esp32> join
+esp32> rest http://esp32-fs.local/image.jpeg -l10
+I (110383) cmd_rest: status=200 bytes=35588 run_time_ms=3391 bps=83958 <-- max
+I (112653) cmd_rest: status=200 bytes=35588 run_time_ms=2267 bps=125586
+I (114923) cmd_rest: status=200 bytes=35588 run_time_ms=2268 bps=125530
+I (117173) cmd_rest: status=200 bytes=35588 run_time_ms=2251 bps=126478
+I (118223) cmd_rest: status=200 bytes=35588 run_time_ms=1048 bps=271664
+I (118433) cmd_rest: status=200 bytes=35588 run_time_ms=210 bps=1355733
+I (118603) cmd_rest: status=200 bytes=35588 run_time_ms=166 bps=1715084
+I (118753) cmd_rest: status=200 bytes=35588 run_time_ms=151 bps=1885456
+I (118903) cmd_rest: status=200 bytes=35588 run_time_ms=148 bps=1923675
+I (119043) cmd_rest: status=200 bytes=35588 run_time_ms=139 bps=2048230 <-- min
+```
+- ESP HTTP Client
+```
+esp32> client http://esp32-fs.local/image.jpeg -l10
+I (228053) cmd_client: status=200 bytes=35588 run_time_ms=2282 bps=124760 chunked
+I (230413) cmd_client: status=200 bytes=35588 run_time_ms=2352 bps=121047 chunked <-- max
+I (232673) cmd_client: status=200 bytes=35588 run_time_ms=2261 bps=125919 chunked
+I (234933) cmd_client: status=200 bytes=35588 run_time_ms=2256 bps=126198 chunked
+I (236153) cmd_client: status=200 bytes=35588 run_time_ms=1223 bps=232791 chunked
+I (236363) cmd_client: status=200 bytes=35588 run_time_ms=206 bps=1382058 chunked
+I (236523) cmd_client: status=200 bytes=35588 run_time_ms=150 bps=1898026 chunked
+I (236673) cmd_client: status=200 bytes=35588 run_time_ms=145 bps=1963475 chunked
+I (236813) cmd_client: status=200 bytes=35588 run_time_ms=140 bps=2033600 chunked
+I (236953) cmd_client: status=200 bytes=35588 run_time_ms=138 bps=2063072 chunked <-- min
 ```
