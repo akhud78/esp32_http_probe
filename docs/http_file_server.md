@@ -42,59 +42,69 @@ $ for i in {1..10}; do $cmd; done
 - HTTP REST Client
 ```
 esp32> join
-esp32> rest http://esp32-fs.local/image.jpeg -l10
-I (51533) cmd_rest: status=200 bytes=35588 run_time_ms=2260 bps=125975
-I (53903) cmd_rest: status=200 bytes=35588 run_time_ms=2361 bps=120586 <-- max
-I (54113) cmd_rest: status=200 bytes=35588 run_time_ms=212 bps=1342943
-I (54233) cmd_rest: status=200 bytes=35588 run_time_ms=122 bps=2333639
-I (54363) cmd_rest: status=200 bytes=35588 run_time_ms=126 bps=2259555
-I (54513) cmd_rest: status=200 bytes=35588 run_time_ms=152 bps=1873052
-I (54633) cmd_rest: status=200 bytes=35588 run_time_ms=113 bps=2519504
-I (54763) cmd_rest: status=200 bytes=35588 run_time_ms=134 bps=2124656
-I (54913) cmd_rest: status=200 bytes=35588 run_time_ms=146 bps=1950027
-I (55043) cmd_rest: status=200 bytes=35588 run_time_ms=124 bps=2296000 <-- min
+esp32> rest http://esp32-fs.local/image.jpeg -l100
+I (480844) cmd_rest: status_code=200 bytes=35588
+I (483404) cmd_rest: status_code=200 bytes=35588
+I (485864) cmd_rest: status_code=200 bytes=35588
+I (488424) cmd_rest: status_code=200 bytes=35588
+I (491694) cmd_rest: status_code=200 bytes=35588
+...
+I (515574) cmd_rest: status_code=200 bytes=35588
+I (515714) cmd_rest: status_code=200 bytes=35588
+I (515844) cmd_rest: status_code=200 bytes=35588
+I (515974) cmd_rest: status_code=200 bytes=35588
+I (515974) cmd_rest: laps=100 run_time_ms=37388 average_time_ms=373 average_bps=761485
 ```
 - ESP HTTP Client
 ```
-esp32> client http://esp32-fs.local/image.jpeg -l10
-I (77043) cmd_client: status=200 bytes=35588 run_time_ms=1748 bps=162874 chunked
-I (77193) cmd_client: status=200 bytes=35588 run_time_ms=146 bps=1950027 chunked
-I (77343) cmd_client: status=200 bytes=35588 run_time_ms=140 bps=2033600 chunked
-I (77503) cmd_client: status=200 bytes=35588 run_time_ms=159 bps=1790591 chunked
-I (77653) cmd_client: status=200 bytes=35588 run_time_ms=145 bps=1963475 chunked
-I (77773) cmd_client: status=200 bytes=35588 run_time_ms=120 bps=2372533 chunked
-I (77923) cmd_client: status=200 bytes=35588 run_time_ms=141 bps=2019177 chunked
-I (78073) cmd_client: status=200 bytes=35588 run_time_ms=151 bps=1885456 chunked
-I (78223) cmd_client: status=200 bytes=35588 run_time_ms=149 bps=1910765 chunked
-I (78373) cmd_client: status=200 bytes=35588 run_time_ms=148 bps=1923675 chunked
+esp32> client http://esp32-fs.local/image.jpeg -l100
+I (71084) cmd_client: status_code=200 bytes=35588 chunked
+I (75334) cmd_client: status_code=200 bytes=35588 chunked
+I (78824) cmd_client: status_code=200 bytes=35588 chunked
+I (81694) cmd_client: status_code=200 bytes=35588 chunked
+...
+I (97204) cmd_client: status_code=200 bytes=35588 chunked
+I (97414) cmd_client: status_code=200 bytes=35588 chunked
+I (97594) cmd_client: status_code=200 bytes=35588 chunked
+I (97764) cmd_client: status_code=200 bytes=35588 chunked
+I (97954) cmd_client: status_code=200 bytes=35588 chunked
+I (97954) cmd_client: laps=100 run_time_ms=27069 average_time_ms=270 average_bps=1051771
 ```
 ### esp32c3
 - HTTP REST Client
 ```
 esp32> join
-esp32> rest http://esp32-fs.local/image.jpeg -l10
-I (110383) cmd_rest: status=200 bytes=35588 run_time_ms=3391 bps=83958 <-- max
-I (112653) cmd_rest: status=200 bytes=35588 run_time_ms=2267 bps=125586
-I (114923) cmd_rest: status=200 bytes=35588 run_time_ms=2268 bps=125530
-I (117173) cmd_rest: status=200 bytes=35588 run_time_ms=2251 bps=126478
-I (118223) cmd_rest: status=200 bytes=35588 run_time_ms=1048 bps=271664
-I (118433) cmd_rest: status=200 bytes=35588 run_time_ms=210 bps=1355733
-I (118603) cmd_rest: status=200 bytes=35588 run_time_ms=166 bps=1715084
-I (118753) cmd_rest: status=200 bytes=35588 run_time_ms=151 bps=1885456
-I (118903) cmd_rest: status=200 bytes=35588 run_time_ms=148 bps=1923675
-I (119043) cmd_rest: status=200 bytes=35588 run_time_ms=139 bps=2048230 <-- min
+esp32> rest http://esp32-fs.local/image.jpeg -l100
+I (181434) cmd_rest: status_code=200 bytes=35588
+I (184704) cmd_rest: status_code=200 bytes=35588
+I (187674) cmd_rest: status_code=200 bytes=35588
+I (192184) cmd_rest: status_code=200 bytes=35588
+I (194444) cmd_rest: status_code=200 bytes=35588
+I (196704) cmd_rest: status_code=200 bytes=35588
+
+...
+I (215384) cmd_rest: status_code=200 bytes=35588
+I (215524) cmd_rest: status_code=200 bytes=35588
+I (215694) cmd_rest: status_code=200 bytes=35588
+I (215834) cmd_rest: status_code=200 bytes=35588
+I (215974) cmd_rest: status_code=200 bytes=35588
+I (215974) cmd_rest: laps=100 run_time_ms=38328 average_time_ms=383 average_bps=742809
 ```
 - ESP HTTP Client
 ```
-esp32> client http://esp32-fs.local/image.jpeg -l10
-I (228053) cmd_client: status=200 bytes=35588 run_time_ms=2282 bps=124760 chunked
-I (230413) cmd_client: status=200 bytes=35588 run_time_ms=2352 bps=121047 chunked <-- max
-I (232673) cmd_client: status=200 bytes=35588 run_time_ms=2261 bps=125919 chunked
-I (234933) cmd_client: status=200 bytes=35588 run_time_ms=2256 bps=126198 chunked
-I (236153) cmd_client: status=200 bytes=35588 run_time_ms=1223 bps=232791 chunked
-I (236363) cmd_client: status=200 bytes=35588 run_time_ms=206 bps=1382058 chunked
-I (236523) cmd_client: status=200 bytes=35588 run_time_ms=150 bps=1898026 chunked
-I (236673) cmd_client: status=200 bytes=35588 run_time_ms=145 bps=1963475 chunked
-I (236813) cmd_client: status=200 bytes=35588 run_time_ms=140 bps=2033600 chunked
-I (236953) cmd_client: status=200 bytes=35588 run_time_ms=138 bps=2063072 chunked <-- min
+esp32> client http://esp32-fs.local/image.jpeg -l100
+I (266764) cmd_client: status_code=200 bytes=35588 chunked
+I (266994) cmd_client: status_code=200 bytes=35588 chunked
+I (267224) cmd_client: status_code=200 bytes=35588 chunked
+I (267474) cmd_client: status_code=200 bytes=35588 chunked
+I (267724) cmd_client: status_code=200 bytes=35588 chunked
+I (267954) cmd_client: status_code=200 bytes=35588 chunked
+...
+I (281834) cmd_client: status_code=200 bytes=35588 chunked
+I (281984) cmd_client: status_code=200 bytes=35588 chunked
+I (282134) cmd_client: status_code=200 bytes=35588 chunked
+I (282274) cmd_client: status_code=200 bytes=35588 chunked
+I (282434) cmd_client: status_code=200 bytes=35588 chunked
+I (282434) cmd_client: laps=100 run_time_ms=15959 average_time_ms=159 average_bps=1783971
+
 ```

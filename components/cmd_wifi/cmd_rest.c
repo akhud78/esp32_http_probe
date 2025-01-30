@@ -21,34 +21,18 @@ static struct {
 } rest_args;
 
 /** 'rest' command  */
-// https://github.com/parabuzzle/idf_http_rest_client
-/*
-    esp32> nvs_set url str -v  http://httpbin.org/stream/6
-    esp32> nvs_set url str -v  http://esp32-fs.local/image.jpeg
-    esp32> nvs_list nvs
-    esp32> rest http://httpbin.org/get
-    nvs_get url str
-*/
-
 static int _read(char *url, bool show)
 {
-    uint64_t start = esp_timer_get_time();
     http_rest_recv_buffer_t response_buffer = {0};
     if (http_rest_client_get(url, &response_buffer) != ESP_OK)
         return -1;
-    uint64_t end = esp_timer_get_time();
-
-    int run_time_ms = (end - start) / 1000;
-    int bytes = response_buffer.buffer_len;
-    int bps = bytes * 1000 * 8 / run_time_ms;
-    ESP_LOGI(TAG, "status=%d bytes=%d run_time_ms=%d bps=%d", 
-        response_buffer.status_code, bytes, run_time_ms, bps);
-
     if (show) {
         printf("--- buffer ---\n%s\n", response_buffer.buffer);
     }
+    int bytes = response_buffer.buffer_len;
     http_rest_client_cleanup(&response_buffer);
-    return 0;
+    ESP_LOGI(TAG, "status_code=%d bytes=%d", response_buffer.status_code, bytes);
+    return bytes;
 }
 
 static int rest(int argc, char **argv)
@@ -75,12 +59,22 @@ static int rest(int argc, char **argv)
         laps = (uint32_t)(rest_args.laps->ival[0]);
     }
     
+    int bytes_total = 0;
+    uint64_t start = esp_timer_get_time();
     for (int i=0; i<laps; i++) {
-        if (_read(url, false)) {
-            return -1;
+        int bytes = _read(url, false);
+        if (bytes <= 0) {
+            break;
         }
+        bytes_total += bytes;
     }
-    
+    uint64_t end = esp_timer_get_time();
+    int run_time_ms = (end - start) / 1000;
+    int average_time_ms = run_time_ms / laps;
+    int average_bps = (float)bytes_total /  run_time_ms * 1000 * 8;
+    ESP_LOGI(TAG, "laps=%d run_time_ms=%d average_time_ms=%d average_bps=%d", 
+        laps, run_time_ms, average_time_ms, average_bps);
+
     return 0;
 }
 

@@ -21,9 +21,9 @@
 #include "cmd_request.h"
 
 /* Constants that aren't configurable in menuconfig */
-#define WEB_SERVER "spb.local" // "example.com"
-#define WEB_PORT "9000" // "80"
-#define WEB_PATH "/image.jpeg" // "/"
+#define WEB_SERVER "example.com"
+#define WEB_PORT "80"
+#define WEB_PATH "/"
 
 #define REQUEST_URL_MAX_LEN      120
 #define REQUEST_BUFFER_SIZE      (1024 * 40)
@@ -49,18 +49,12 @@ static void http_get_task(void *pvParameters)
     };
     struct addrinfo *res;
     struct in_addr *addr;
-    int s; // r;
-    //char recv_buf[64];
+    int s, r;
+    char recv_buf[64];
 
+    uint64_t start = esp_timer_get_time();
+    int bytes = 0;
     while(1) {
-        uint64_t start = esp_timer_get_time();
-        
-        char *buffer = malloc(REQUEST_BUFFER_SIZE + 1);
-        if (buffer == NULL) {
-            ESP_LOGE(TAG, "Cannot malloc http receive buffer");
-            vTaskDelete(NULL);
-        }
-        
         int err = getaddrinfo(WEB_SERVER, WEB_PORT, &hints, &res);
 
         if(err != 0 || res == NULL) {
@@ -115,25 +109,20 @@ static void http_get_task(void *pvParameters)
         }
         ESP_LOGI(TAG, "... set socket receiving timeout success");
 
-        bzero(buffer, REQUEST_BUFFER_SIZE);
-        int read_len = 0;
         /* Read HTTP response */
-        while (read_len < REQUEST_BUFFER_SIZE) {
-            int data_read = read(s, buffer + read_len, REQUEST_BUFFER_SIZE - read_len);
-            //ESP_LOGI(TAG, "data_read=%d", data_read);
-            if (data_read <= 0) {
-                break;
+        do {
+            bzero(recv_buf, sizeof(recv_buf));
+            r = read(s, recv_buf, sizeof(recv_buf)-1);
+            /*
+            for(int i = 0; i < r; i++) {
+                putchar(recv_buf[i]);
             }
-            read_len += data_read;
-        } // while
+            */
+            bytes += r;
+        } while(r > 0);
 
-        ESP_LOGI(TAG, "... done reading from socket. Last read return=%d errno=%d.", read_len, errno);
+        ESP_LOGI(TAG, "... done reading from socket. Last read return=%d errno=%d.", r, errno);
         close(s);
-        
-        buffer[read_len] = '\0';
-        //printf("--- buffer ---\n%s\n", buffer);
-        
-        
         /*
         for(int countdown = 10; countdown >= 0; countdown--) {
             ESP_LOGI(TAG, "%d... ", countdown);
@@ -141,18 +130,16 @@ static void http_get_task(void *pvParameters)
         }
         ESP_LOGI(TAG, "Starting again!");
         */
-        free(buffer);
-        uint64_t end = esp_timer_get_time();
-        int run_time_ms = (end - start) / 1000;
-        //int bps = read_len * 1000 * 8 / run_time_ms;
-        //ESP_LOGI(TAG, "status=%d bytes=%d run_time_ms=%d bps=%d", status_code, read_len, run_time_ms, bps);
-        ESP_LOGI(TAG, "run_time_ms=%d", run_time_ms);
-        
         break;
     }
+    uint64_t end = esp_timer_get_time();
+    int run_time_ms = (end - start) / 1000;
+    int bps = (float)bytes /  run_time_ms * 1000 * 8;
+    ESP_LOGI(TAG, "run_time_ms=%d bytes=%d bps=%d", run_time_ms, bytes, bps);
+    
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     vTaskDelete(NULL);
 }
-
 
 
 static int _read(char *url, bool show)

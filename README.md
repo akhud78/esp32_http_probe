@@ -44,7 +44,7 @@ $ idf.py set-target esp32s3
 - Connect development board to your computer and run
 ```
 $ cd ~/esp/esp32_http_probe
-$ idf.py -p /dev/ttyUSB0 flash monitor
+$ idf.py -p /dev/ttyACM0 flash monitor
 ...
 ...
 Type 'help' to get the list of commands.

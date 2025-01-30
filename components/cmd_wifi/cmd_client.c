@@ -23,14 +23,6 @@ static struct {
 } client_args;
 
 /** 'client' command  */
-/*
-    esp32> nvs_set url str -v  http://httpbin.org/stream/6
-    esp32> nvs_set url str -v  http://esp32-fs.local/image.jpeg
-    esp32> nvs_list nvs
-    esp32> client http://httpbin.org/get
-    nvs_get url str
-*/
-
 static int _read(char *url, bool show)
 {
     char *buffer = malloc(CLIENT_BUFFER_SIZE + 1);
@@ -60,7 +52,7 @@ static int _read(char *url, bool show)
         return -1;
     }
     int read_len = 0;
-    //bool chunked = false;
+    bool chunked = false;
         
     int content_length = esp_http_client_fetch_headers(client);
     if (content_length < 0) {
@@ -68,25 +60,15 @@ static int _read(char *url, bool show)
         free(buffer);
         return -1;
     } else if (content_length == 0 && esp_http_client_is_chunked_response(client)) { 
-        //chunked = true;
+        chunked = true;
         
         read_len = esp_http_client_read_response(client, buffer, CLIENT_BUFFER_SIZE);
-        /*
-        while (read_len < CLIENT_BUFFER_SIZE) {
-            //int data_read = esp_http_client_read(client, buffer + read_len, CLIENT_BUFFER_SIZE - read_len);
-            int data_read = esp_http_client_read(client, buffer + read_len, 1024*4);
-            ESP_LOGI(TAG, "data_read=%d", data_read);
-            if (data_read <= 0) {
-                break;
-            }
-            read_len += data_read;
-        } // while
-        */
+
     } else if (content_length <= CLIENT_BUFFER_SIZE) {
         read_len = esp_http_client_read(client, buffer, content_length);
     }
     int status_code = esp_http_client_get_status_code(client);
-    ESP_LOGI(TAG, "status_code=%d bytes=%d", status_code, read_len);
+    ESP_LOGI(TAG, "status_code=%d bytes=%d %s", status_code, read_len, chunked ? "chunked" : "");
 
     esp_http_client_close(client);
     esp_http_client_cleanup(client);
@@ -123,30 +105,24 @@ static int client_get(int argc, char **argv)
         laps = (uint32_t)(client_args.laps->ival[0]);
     }
     
-    int run_time_total_ms = 0;
     int bytes_total = 0;
+    uint64_t start = esp_timer_get_time();
     for (int i=0; i<laps; i++) {
-        
-        uint64_t start = esp_timer_get_time();
         int bytes = _read(url, false);
-        uint64_t end = esp_timer_get_time();
-        
         if (bytes <= 0) {
             break;
         }
-        int run_time_ms = (end - start) / 1000;
-        run_time_total_ms += run_time_ms;
         bytes_total += bytes;
-        
     }
-    int average_time = run_time_total_ms / laps;
-    int average_bps = bytes_total /  run_time_total_ms * 1000 * 8;
-    ESP_LOGI(TAG, "laps=%d run_time_total_ms=%d average_time=%d average_bps=%d", 
-        laps, run_time_total_ms, average_time, average_bps);
+    uint64_t end = esp_timer_get_time();
+    int run_time_ms = (end - start) / 1000;
+    int average_time_ms = run_time_ms / laps;
+    int average_bps = (float)bytes_total /  run_time_ms * 1000 * 8;
+    ESP_LOGI(TAG, "laps=%d run_time_ms=%d average_time_ms=%d average_bps=%d", 
+        laps, run_time_ms, average_time_ms, average_bps);
     
     return 0;
 }
-
 
 void register_client(void)
 {
