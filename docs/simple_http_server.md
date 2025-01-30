@@ -5,7 +5,7 @@
 ---
 
 ## Setup
-- [Python SimpleHTTPServer](https://www.digitalocean.com/community/tutorials/python-simplehttpserver-http-server) - use as local file server
+- [Python SimpleHTTPServer](https://pypi.org/project/simple-http-server/) - use as local file server
 - Download test files and run server
 ```
 $ hostname
