@@ -31,7 +31,6 @@ $ . $HOME/esp/esp-idf-v5.4/export.sh
 $ cd ~/esp
 $ git clone https://github.com/akhud78/esp32_http_probe
 $ cd ~/esp/esp32_http_probe
-$ git submodule update --init --recursive
 ```
 - Set the chip target to build
 ```
@@ -40,8 +39,7 @@ $ idf.py set-target esp32s3
 - Change build [Configuration](docs/config.md)
 
 ## Run
-- Use [PuTTY](https://www.putty.org/) for Windows or [GTKTerm](https://manpages.ubuntu.com/manpages/jammy/man1/gtkterm.1.html) for Linux as serial port terminal.
-- Connect development board to your computer and run
+- Connect development board USB port to your computer and run.
 ```
 $ cd ~/esp/esp32_http_probe
 $ idf.py -p /dev/ttyACM0 flash monitor
@@ -86,4 +84,5 @@ esp32> ping example.com
 5 packets transmitted, 5 received, 0% packet loss, time 1137ms
 ```
 ## Usage
+- [Flashing](docs/flashing.md)
 - [Tests](docs/tests.md)

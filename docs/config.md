@@ -13,12 +13,6 @@ $ idf.py menuconfig
 
 ## Common
 
-- Use UART0 for console output
-```
-(Top) -> Component config -> ESP System Settings
-    Channel for console output (Default: UART0)  --->
-    Channel for console secondary output (No secondary console)  --->
-```
 - Set LED control
 ```
 (Top)-> Example Configuration -> LED setup
@@ -33,8 +27,8 @@ $ idf.py build
 - Connect your device
 - Flash onto the device
 ```
-$ idf.py -p /dev/ttyUSB0 erase-flash
-$ idf.py -p /dev/ttyUSB0 flash monitor
+$ idf.py -p /dev/ttyACM0 erase-flash
+$ idf.py -p /dev/ttyACM0 flash monitor
 ```
 - To exit IDF monitor use the shortcut `Ctrl+]`.
 

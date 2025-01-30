@@ -7,6 +7,12 @@ managed_components/
 *.bak
 *.tmp
 
-build/
+build/**
+!build/esp32
+!build/esp32/*
+!build/esp32c3
+!build/esp32c3/*
+!build/esp32s3/*
+
 tmp/
 bak/
