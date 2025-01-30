@@ -12,6 +12,7 @@
 #include "cmd_wifi.h"
 #include "cmd_rest.h"
 #include "cmd_client.h"
+#include "cmd_request.h"
 #include "cmd_ping.h"
 #include "cmd_nvs.h"
 
@@ -53,4 +54,5 @@ void register_commands(void)
     register_nvs();
     register_rest();
     register_client();
+    register_request();
 }

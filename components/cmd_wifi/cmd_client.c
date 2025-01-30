@@ -17,67 +17,66 @@
 static const char *TAG = "cmd_client";
 
 static struct {
-    struct arg_str *url_base;
+    struct arg_str *url;
     struct arg_int *laps;
     struct arg_end *end;
 } client_args;
 
 /** 'client' command  */
-/*
-    esp32> nvs_set url_base str -v  http://httpbin.org/stream/6
-    esp32> nvs_set url_base str -v  http://esp32-fs.local/image.jpeg
-    esp32> nvs_list nvs
-    esp32> client http://httpbin.org/get
-    nvs_get url_base str
-*/
-
-static int _read(esp_http_client_handle_t client, char *buffer, int len)
+static int _read(char *url, bool show)
 {
+    char *buffer = malloc(CLIENT_BUFFER_SIZE + 1);
+    if (buffer == NULL) {
+        ESP_LOGE(TAG, "Cannot malloc http receive buffer");
+        return -1;
+    }
+    
+    esp_http_client_config_t config = {
+        .auth_type = HTTP_AUTH_TYPE_BASIC,
+        .max_authorization_retries = -1,
+        //.buffer_size = 1024*4,
+    };
+    
+    //ESP_LOGI(TAG, "url='%s'", url);
+    config.url = url;
+    
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    if (client == NULL) {
+        free(buffer);
+        return -1; 
+    }  
+    
     esp_err_t err;    
     if ((err = esp_http_client_open(client, 0)) != ESP_OK) {
         ESP_LOGE(TAG, "Failed to open HTTP connection: %s", esp_err_to_name(err));
         return -1;
     }
     int read_len = 0;
+    bool chunked = false;
         
-    uint64_t start = esp_timer_get_time();
-    
     int content_length = esp_http_client_fetch_headers(client);
     if (content_length < 0) {
         ESP_LOGE(TAG, "HTTP client fetch headers failed");
+        free(buffer);
+        return -1;
     } else if (content_length == 0 && esp_http_client_is_chunked_response(client)) { 
-        ESP_LOGI(TAG, "Chunked encoding stream");
+        chunked = true;
         
-        read_len = esp_http_client_read_response(client, buffer, len);
-        /*
-        while (read_len < CLIENT_BUFFER_SIZE) {
-            //int data_read = esp_http_client_read(client, buffer + read_len, CLIENT_BUFFER_SIZE - read_len);
-            int data_read = esp_http_client_read(client, buffer + read_len, 1024*4);
-            ESP_LOGI(TAG, "data_read=%d", data_read);
-            if (data_read <= 0) {
-                break;
-            }
-            read_len += data_read;
-        } // while
-        */
-    } else if (content_length <= len) {
+        read_len = esp_http_client_read_response(client, buffer, CLIENT_BUFFER_SIZE);
+
+    } else if (content_length <= CLIENT_BUFFER_SIZE) {
         read_len = esp_http_client_read(client, buffer, content_length);
     }
-    ESP_LOGI(TAG, "Status = %d", esp_http_client_get_status_code(client));
+    int status_code = esp_http_client_get_status_code(client);
+    ESP_LOGI(TAG, "status_code=%d bytes=%d %s", status_code, read_len, chunked ? "chunked" : "");
 
-    uint64_t end = esp_timer_get_time();
-    
+    esp_http_client_close(client);
+    esp_http_client_cleanup(client);
+    free(buffer);
+
     if (read_len < 0) {
         ESP_LOGE(TAG, "Error read data");
-    } else {
-        buffer[read_len] = 0;
-        ESP_LOGI(TAG, "read_len = %d", read_len);
-        
-        int run_time_ms = (end - start) / 1000;
-        int bps = read_len * 1000 * 8 / run_time_ms;
-        ESP_LOGI(TAG, "bytes=%d run_time_ms=%d bps=%d", read_len, run_time_ms, bps);        
     }
-    
     return read_len;
 }
 
@@ -91,11 +90,11 @@ static int client_get(int argc, char **argv)
         return 1;
     }
     
-    char url_base[CLIENT_URL_MAX_LEN] = "";
-    strlcpy(url_base, client_args.url_base->sval[0],  sizeof(url_base));
+    char url[CLIENT_URL_MAX_LEN] = "";
+    strlcpy(url, client_args.url->sval[0],  sizeof(url));
     
-    if (!strlen(url_base)) {
-        if (get_str_from_nvs("url_base", url_base, sizeof(url_base)) != ESP_OK) {
+    if (!strlen(url)) {
+        if (get_str_from_nvs("url", url, sizeof(url)) != ESP_OK) {
             ESP_LOGE(TAG, "No such entry was found");
             return -1;
         }
@@ -106,41 +105,28 @@ static int client_get(int argc, char **argv)
         laps = (uint32_t)(client_args.laps->ival[0]);
     }
     
-    char *buffer = malloc(CLIENT_BUFFER_SIZE + 1);
-    if (buffer == NULL) {
-        ESP_LOGE(TAG, "Cannot malloc http receive buffer");
-        return -1;
-    }
-    
-    esp_http_client_config_t config = {
-        .auth_type = HTTP_AUTH_TYPE_BASIC,
-        .max_authorization_retries = -1,
-        .buffer_size = 1024*4,
-    };
-    
-    ESP_LOGI(TAG, "url_base='%s'", url_base);
-    config.url = url_base;
-    
-    esp_http_client_handle_t client = esp_http_client_init(&config);
-    if (client == NULL) {
-        return -1; 
-    }  
-    
+    int bytes_total = 0;
+    uint64_t start = esp_timer_get_time();
     for (int i=0; i<laps; i++) {
-        _read(client, buffer, CLIENT_BUFFER_SIZE);
+        int bytes = _read(url, false);
+        if (bytes <= 0) {
+            break;
+        }
+        bytes_total += bytes;
     }
-
-    esp_http_client_close(client);
-    esp_http_client_cleanup(client);
-    free(buffer);
+    uint64_t end = esp_timer_get_time();
+    int run_time_ms = (end - start) / 1000;
+    int average_time_ms = run_time_ms / laps;
+    int average_bps = (float)bytes_total /  run_time_ms * 1000 * 8;
+    ESP_LOGI(TAG, "laps=%d run_time_ms=%d average_time_ms=%d average_bps=%d", 
+        laps, run_time_ms, average_time_ms, average_bps);
     
     return 0;
 }
 
-
 void register_client(void)
 {
-    client_args.url_base = arg_str0(NULL, NULL, "<url_base>", "URL base");
+    client_args.url = arg_str0(NULL, NULL, "<url>", "URL base");
     client_args.laps = arg_int0("l", "laps", "<n>", "number of laps");
     client_args.end = arg_end(1);
     
